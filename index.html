@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>श्री स्वामी समर्थ</title>
+
+  <style>
+    body{
+      font-family: Arial, sans-serif;
+      background:#f5f5f5;
+      margin:0;
+      padding:0;
+    }
+
+    .container{
+      max-width:500px;
+      margin:30px auto;
+      background:white;
+      padding:20px;
+      border-radius:12px;
+      box-shadow:0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h1{
+      text-align:center;
+      color:#ff6600;
+    }
+
+    .product{
+      display:flex;
+      justify-content:space-between;
+      margin:12px 0;
+      padding:10px;
+      background:#fafafa;
+      border-radius:8px;
+    }
+
+    button{
+      width:100%;
+      background:#28a745;
+      color:white;
+      border:none;
+      padding:15px;
+      font-size:18px;
+      border-radius:10px;
+      cursor:pointer;
+      margin-top:20px;
+    }
+
+    button:hover{
+      background:#218838;
+    }
+
+    .upi{
+      text-align:center;
+      margin-top:15px;
+      font-weight:bold;
+      color:#333;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>श्री स्वामी समर्थ</h1>
+
+  <p align="center">
+    दर्जेदार उत्पादने ऑनलाइन उपलब्ध
+  </p>
+
+  <div class="product">
+    <span>साखर</span>
+    <span>₹100</span>
+  </div>
+
+  <div class="product">
+    <span>पावडर</span>
+    <span>₹150</span>
+  </div>
+
+  <div class="product">
+    <span>तेल</span>
+    <span>₹200</span>
+  </div>
+
+  <div class="product">
+    <span>साबण</span>
+    <span>₹50</span>
+  </div>
+
+  <div class="product">
+    <span>छोटा</span>
+    <span>₹80</span>
+  </div>
+
+  <button onclick="payNow()">
+    पेमेंट करा
+  </button>
+
+  <div class="upi">
+    UPI ID: nileshmandale@axisbank
+  </div>
+
+</div>
+
+<script>
+function payNow(){
+
+  let upi = "upi://pay?pa=nileshmandale@axisbank&pn=Shree Swami Samarth&cu=INR";
+
+  window.location.href = upi;
+}
+</script>
+
+</body>
+</html>
