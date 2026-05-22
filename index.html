@@ -3,9 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Shree Swami Samarth Shop</title>
 
 <style>
+
 body{
   font-family: Arial;
   background:#f5f5f5;
@@ -36,6 +38,7 @@ input{
 .product{
   display:flex;
   justify-content:space-between;
+  align-items:center;
   padding:10px;
   margin:8px 0;
   background:#fafafa;
@@ -48,24 +51,31 @@ input{
   align-items:center;
 }
 
+.qty button{
+  width:35px;
+  height:35px;
+}
+
 button{
-  width:100%;
-  padding:12px;
+  padding:10px;
   border:none;
   border-radius:8px;
-  margin-top:10px;
   cursor:pointer;
+}
+
+.main-btn{
+  width:100%;
+  margin-top:10px;
+  color:white;
   font-size:16px;
 }
 
-.add{background:#007bff;color:white;}
-.pay{background:#28a745;color:white;}
-.wa{background:#25D366;color:white;}
-.loc{background:#ff6600;color:white;}
-.pdf{background:#6f42c1;color:white;}
+.pay{background:#28a745;}
+.wa{background:#25D366;}
+.pdf{background:#6f42c1;}
+.loc{background:#ff6600;}
 
 </style>
-
 </head>
 
 <body>
@@ -74,127 +84,218 @@ button{
 
 <h1>Shree Swami Samarth Shop</h1>
 
-<!-- CUSTOMER DETAILS -->
 <input id="name" placeholder="नाव">
 <input id="phone" placeholder="मोबाईल नंबर">
 <input id="address" placeholder="पत्ता">
 
 <!-- PRODUCTS -->
-<div class="product">
-  <span>साखर - ₹100</span>
-  <div class="qty">
-    <button onclick="change('sugar',-1)">-</button>
-    <span id="sugar">0</span>
-    <button onclick="change('sugar',1)">+</button>
-  </div>
-</div>
 
-<div class="product">
-  <span>पावडर - ₹150</span>
-  <div class="qty">
-    <button onclick="change('powder',-1)">-</button>
-    <span id="powder">0</span>
-    <button onclick="change('powder',1)">+</button>
-  </div>
-</div>
+<div id="products"></div>
 
-<div class="product">
-  <span>तेल - ₹200</span>
-  <div class="qty">
-    <button onclick="change('oil',-1)">-</button>
-    <span id="oil">0</span>
-    <button onclick="change('oil',1)">+</button>
-  </div>
-</div>
+<h2 id="total">Total: ₹0</h2>
 
-<h3 id="total">Total: ₹0</h3>
+<button class="main-btn pay" onclick="payNow()">UPI Payment</button>
 
-<!-- BUTTONS -->
-<button class="pay" onclick="payNow()">UPI Payment</button>
+<button class="main-btn wa" onclick="orderWhatsApp()">WhatsApp Order</button>
 
-<button class="wa" onclick="orderWhatsApp()">WhatsApp Order</button>
+<button class="main-btn pdf" onclick="downloadInvoice()">Download Invoice</button>
 
-<button class="pdf" onclick="downloadPDF()">Download Invoice</button>
-
-<a href="https://www.google.com/maps/search/?api=1&query=Nilesh%20Mandale%20House%20Ganesh%20Nagar" target="_blank">
-<button class="loc">📍 Location पाहा</button>
+<a href="https://www.google.com/maps/search/?api=1&query=Ganesh+Nagar" target="_blank">
+  <button class="main-btn loc">📍 Location पाहा</button>
 </a>
 
 </div>
 
 <script>
 
-let cart = {sugar:0,powder:0,oil:0};
+let products = [
 
-let price = {
-  sugar:100,
-  powder:150,
-  oil:200
-};
+  {id:"sugar",name:"साखर",price:100},
+  {id:"rice",name:"तांदूळ",price:80},
+  {id:"wheat",name:"गहू",price:60},
+  {id:"toor",name:"तूर डाळ",price:140},
+  {id:"harbhara",name:"हरभरा डाळ",price:110},
+  {id:"moog",name:"मूग डाळ",price:130},
+  {id:"oil",name:"तेल",price:200},
+  {id:"salt",name:"मीठ",price:40},
+  {id:"halad",name:"हळद पावडर",price:30},
+  {id:"tikhat",name:"तिखट पावडर",price:50},
+  {id:"dhane",name:"धणे पावडर",price:40},
+  {id:"masala",name:"गरम मसाला",price:60},
+  {id:"tea",name:"चहा पावडर",price:250},
+  {id:"coffee",name:"कॉफी",price:300},
+  {id:"soap",name:"साबण",price:35},
+  {id:"powder",name:"डिटर्जंट पावडर",price:120},
+  {id:"shampoo",name:"शॅम्पू",price:5},
+  {id:"hairoil",name:"हेअर ऑइल",price:90},
+  {id:"paste",name:"टूथपेस्ट",price:55},
+  {id:"brush",name:"ब्रश",price:20},
+  {id:"agarbatti",name:"अगरबत्ती",price:30},
+  {id:"matchbox",name:"माचीस",price:5},
+  {id:"biscuit",name:"बिस्किट",price:20},
+  {id:"chocolate",name:"चॉकलेट",price:10},
+  {id:"noodles",name:"नूडल्स",price:15},
+  {id:"wafers",name:"वेफर्स",price:20},
+  {id:"drink",name:"कोल्ड ड्रिंक",price:40}
 
-function change(item,val){
-  cart[item]+=val;
-  if(cart[item]<0) cart[item]=0;
+];
 
-  document.getElementById(item).innerText = cart[item];
+let cart = {};
+
+products.forEach(item=>{
+  cart[item.id]=0;
+});
+
+let productsDiv = document.getElementById("products");
+
+products.forEach(item=>{
+
+  productsDiv.innerHTML += `
+
+  <div class="product">
+
+    <span>${item.name} - ₹${item.price}</span>
+
+    <div class="qty">
+
+      <button onclick="changeQty('${item.id}',-1)">-</button>
+
+      <span id="${item.id}">0</span>
+
+      <button onclick="changeQty('${item.id}',1)">+</button>
+
+    </div>
+
+  </div>
+
+  `;
+
+});
+
+function changeQty(id,val){
+
+  cart[id]+=val;
+
+  if(cart[id]<0){
+    cart[id]=0;
+  }
+
+  document.getElementById(id).innerText = cart[id];
 
   updateTotal();
 }
 
 function updateTotal(){
-  let total =
-  cart.sugar*price.sugar +
-  cart.powder*price.powder +
-  cart.oil*price.oil;
 
-  document.getElementById("total").innerText = "Total: ₹" + total;
+  let total = 0;
+
+  products.forEach(item=>{
+
+    total += cart[item.id] * item.price;
+
+  });
+
+  document.getElementById("total").innerText =
+  "Total: ₹" + total;
 }
 
 function payNow(){
-  window.location.href = "upi://pay?pa=nileshmandale@axisbank&pn=Shop&cu=INR";
+
+  let total = 0;
+
+  products.forEach(item=>{
+
+    total += cart[item.id] * item.price;
+
+  });
+
+  window.location.href =
+  "upi://pay?pa=nileshmandale@axisbank&pn=Shop&am="+total+"&cu=INR";
 }
 
 function orderWhatsApp(){
 
-  let name = document.getElementById("name").value;
-  let phone = document.getElementById("phone").value;
-  let address = document.getElementById("address").value;
+  let name =
+  document.getElementById("name").value;
 
-  let msg = "Order Details:%0A";
-  msg += "Name: " + name + "%0A";
-  msg += "Phone: " + phone + "%0A";
-  msg += "Address: " + address + "%0A%0A";
+  let phone =
+  document.getElementById("phone").value;
 
-  if(cart.sugar>0) msg += "साखर: " + cart.sugar + "%0A";
-  if(cart.powder>0) msg += "पावडर: " + cart.powder + "%0A";
-  if(cart.oil>0) msg += "तेल: " + cart.oil + "%0A";
+  let address =
+  document.getElementById("address").value;
 
-  window.open("https://wa.me/918530985372?text=" + msg, "_blank");
+  let msg = "🛒 Order Details:%0A%0A";
+
+  msg += "👤 Name: " + name + "%0A";
+  msg += "📞 Phone: " + phone + "%0A";
+  msg += "🏠 Address: " + address + "%0A%0A";
+
+  products.forEach(item=>{
+
+    if(cart[item.id] > 0){
+
+      msg += item.name + " : " + cart[item.id] + "%0A";
+
+    }
+
+  });
+
+  let total = 0;
+
+  products.forEach(item=>{
+
+    total += cart[item.id] * item.price;
+
+  });
+
+  msg += "%0A💰 Total: ₹" + total;
+
+  window.open(
+    "https://wa.me/918530985372?text=" + msg,
+    "_blank"
+  );
 }
 
-function downloadPDF(){
+function downloadInvoice(){
 
-  let name = document.getElementById("name").value;
-  let address = document.getElementById("address").value;
+  let name =
+  document.getElementById("name").value;
 
-  let total =
-  cart.sugar*price.sugar +
-  cart.powder*price.powder +
-  cart.oil*price.oil;
+  let address =
+  document.getElementById("address").value;
 
   let content =
-  "Shree Swami Samarth Invoice\n\n" +
-  "Name: " + name + "\n" +
-  "Address: " + address + "\n\n" +
-  "Sugar: " + cart.sugar + "\n" +
-  "Powder: " + cart.powder + "\n" +
-  "Oil: " + cart.oil + "\n\n" +
-  "TOTAL: ₹" + total;
+  "Shree Swami Samarth Shop Invoice\n\n";
 
-  let blob = new Blob([content], {type:"application/pdf"});
+  content += "Name: " + name + "\n";
+  content += "Address: " + address + "\n\n";
+
+  let total = 0;
+
+  products.forEach(item=>{
+
+    if(cart[item.id] > 0){
+
+      content +=
+      item.name + " : " +
+      cart[item.id] +
+      " x ₹" + item.price + "\n";
+
+      total += cart[item.id] * item.price;
+    }
+
+  });
+
+  content += "\nTOTAL: ₹" + total;
+
+  let blob = new Blob([content], {type:"text/plain"});
+
   let a = document.createElement("a");
+
   a.href = URL.createObjectURL(blob);
-  a.download = "invoice.pdf";
+
+  a.download = "invoice.txt";
+
   a.click();
 }
 
