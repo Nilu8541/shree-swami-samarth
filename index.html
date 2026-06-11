@@ -1,13 +1,14 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title> Daily Report Portal</title>
+<title>Driver Daily Report</title>
 
 <style>
 body{
-    font-family:Arial,sans-serif;
+    font-family: Arial, sans-serif;
     background:#f4f6f9;
     padding:15px;
 }
@@ -33,6 +34,7 @@ input,select,textarea{
     margin-top:5px;
     border:1px solid #ccc;
     border-radius:6px;
+    box-sizing:border-box;
 }
 button{
     width:100%;
@@ -70,26 +72,26 @@ button{
 <label>Date</label>
 <input type="date" id="date">
 
-<<label>Driver Name </label>
-<select id="Number">
-    <option value="">-- Select Name --</option>
-    <option value="Anil " selected>Anil</option>
-    <option value="Pratik" selected>Pratik</option>
+<label>Driver Name</label>
+<select id="driver">
+    <option value="">-- Select Driver --</option>
+    <option value="Anil">Anil</option>
+    <option value="Pratik">Pratik</option>
     <option value="Yash">Yash</option>
 </select>
 
 <label>Shift</label>
 <select id="shift">
-<option>Day Shift</option>
-<option>Night Shift</option>
+    <option value="Day Shift">Day Shift</option>
+    <option value="Night Shift">Night Shift</option>
 </select>
 
 <label>Vehicle Number</label>
 <select id="vehicle">
     <option value="">-- Select Vehicle --</option>
-    <option value="MH12ZE1879" selected>MH 12 ZE 1879</option>
-    <option value="MH12ZE1879" selected>MH 12 CE 1234</option>
-    <option value="MH12CW8541">MH 12 CW 8541</option>
+    <option value="MH 12 ZE 1879">MH 12 ZE 1879</option>
+    <option value="MH 12 CE 1234">MH 12 CE 1234</option>
+    <option value="MH 12 CW 8541">MH 12 CW 8541</option>
 </select>
 
 <label>Starting KM</label>
@@ -97,6 +99,9 @@ button{
 
 <label>Ending KM</label>
 <input type="number" id="endkm">
+
+<label>Total KM</label>
+<input type="number" id="totalkm" readonly>
 
 <label>CNG Cost (₹)</label>
 <input type="number" id="cng">
@@ -107,9 +112,8 @@ button{
 <label>Kharadi Trips</label>
 <input type="number" id="kharadi" value="0">
 
-
 <label>Remarks</label>
-<textarea id="remarks"></textarea>
+<textarea id="remarks" rows="4"></textarea>
 
 <button class="generate" onclick="generateReport()">
 Generate Report
@@ -125,83 +129,90 @@ Generate Report
 
 <script>
 
+// Set Today's Date
 document.getElementById("date").value =
 new Date().toISOString().split("T")[0];
 
+// Auto Calculate Total KM
+document.getElementById("startkm").addEventListener("input", calculateKM);
+document.getElementById("endkm").addEventListener("input", calculateKM);
+
+function calculateKM(){
+    let start = parseFloat(document.getElementById("startkm").value) || 0;
+    let end = parseFloat(document.getElementById("endkm").value) || 0;
+
+    document.getElementById("totalkm").value = end - start;
+}
+
+// Generate Report
 function generateReport(){
 
-let date=document.getElementById("date").value;
-let driver=document.getElementById("driver").value;
-let shift=document.getElementById("shift").value;
-let vehicle=document.getElementById("vehicle").value;
-let pickup=document.getElementById("pickup").value;
-let drop=document.getElementById("drop").value;
-let start=parseFloat(document.getElementById("startkm").value)||0;
-let end=parseFloat(document.getElementById("endkm").value)||0;
-let cng=parseFloat(document.getElementById("cng").value)||0;
+    let date = document.getElementById("date").value;
+    let driver = document.getElementById("driver").value;
+    let shift = document.getElementById("shift").value;
+    let vehicle = document.getElementById("vehicle").value;
 
-let mag=parseInt(document.getElementById("magarpatta").value)||0;
-let kha=parseInt(document.getElementById("kharadi").value)||0;
+    let start = parseFloat(document.getElementById("startkm").value) || 0;
+    let end = parseFloat(document.getElementById("endkm").value) || 0;
+    let totalKm = end - start;
 
-let male=parseInt(document.getElementById("male").value)||0;
-let female=parseInt(document.getElementById("female").value)||0;
+    let cng = parseFloat(document.getElementById("cng").value) || 0;
 
-let remarks=document.getElementById("remarks").value;
+    let mag = parseInt(document.getElementById("Total Trip").value) || 0;
+    
 
-let totalKm=end-start;
-let totalTrips=mag+kha;
-let totalEmp=male+female;
+    let totalTrips = mag + kha;
 
-let report=
-`🚗 DRIVER DAILY REPORT
+    let remarks = document.getElementById("remarks").value;
 
-Date: ${date}
-Driver Name: ${driver}
-Shift: ${shift}
+    let report = `🚗 DRIVER DAILY REPORT
 
-Vehicle No: ${vehicle}
+📅 Date: ${date}
 
-Pickup Time: ${pickup}
-Drop Time: ${drop}
+👤 Driver Name: ${driver}
 
-Starting KM: ${start}
-Ending KM: ${end}
-Total KM: ${totalKm}
+🕒 Shift: ${shift}
 
-CNG Cost: ₹${cng}
+🚘 Vehicle No: ${vehicle}
 
-Magarpatta Trips: ${mag}
-Kharadi Trips: ${kha}
-Total Trips: ${totalTrips}
+📍 Starting KM: ${start}
 
-Male Employees: ${male}
-Female Employees: ${female}
-Total Employees: ${totalEmp}
+📍 Ending KM: ${end}
 
-Remarks: ${remarks}`;
+🛣️ Total KM: ${totalKm}
 
-document.getElementById("report").style.display="block";
-document.getElementById("report").innerText=report;
+⛽ CNG Cost: ₹${cng}
+
+📌 Magarpatta Trips: ${mag}
+
+🚖 Total Trips: ${totalTrips}
+
+📝 Remarks: ${remarks}`;
+
+    document.getElementById("report").style.display = "block";
+    document.getElementById("report").innerText = report;
 }
 
+// Send WhatsApp
 function sendWhatsApp(){
 
-let report=document.getElementById("report").innerText;
+    let report = document.getElementById("report").innerText;
 
-if(report==""){
-alert("Please Generate Report First");
-return;
+    if(report === ""){
+        alert("Please Generate Report First");
+        return;
+    }
+
+    let phone = "918530985372";
+
+    let url = "https://wa.me/" + phone +
+              "?text=" + encodeURIComponent(report);
+
+    window.open(url, "_blank");
 }
 
-let phone="918530985372";
-
-let url=
-"https://wa.me/"+phone+
-"?text="+encodeURIComponent(report);
-
-window.open(url,"_blank");
-}
 </script>
 
 </body>
 </html>
+```
