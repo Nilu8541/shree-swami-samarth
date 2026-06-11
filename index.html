@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -113,7 +112,7 @@ button{
 <input type="number" id="kharadi" value="0">
 
 <label>Remarks</label>
-<textarea id="remarks" rows="4"></textarea>
+<textarea id="remarks" rows="3"></textarea>
 
 <button class="generate" onclick="generateReport()">
 Generate Report
@@ -129,11 +128,11 @@ Generate Report
 
 <script>
 
-// Set Today's Date
+// Date auto fill
 document.getElementById("date").value =
 new Date().toISOString().split("T")[0];
 
-// Auto Calculate Total KM
+// Auto KM calculate
 document.getElementById("startkm").addEventListener("input", calculateKM);
 document.getElementById("endkm").addEventListener("input", calculateKM);
 
@@ -154,59 +153,56 @@ function generateReport(){
 
     let start = parseFloat(document.getElementById("startkm").value) || 0;
     let end = parseFloat(document.getElementById("endkm").value) || 0;
+
     let totalKm = end - start;
 
     let cng = parseFloat(document.getElementById("cng").value) || 0;
 
-    let mag = parseInt(document.getElementById("Total Trip").value) || 0;
-    
+    let mag = parseInt(document.getElementById("magarpatta").value) || 0;
+    let kha = parseInt(document.getElementById("kharadi").value) || 0;
 
     let totalTrips = mag + kha;
 
     let remarks = document.getElementById("remarks").value;
 
-    let report = `🚗 DRIVER DAILY REPORT
+    let report =
+`🚗 DRIVER DAILY REPORT
 
 📅 Date: ${date}
-
-👤 Driver Name: ${driver}
-
+👤 Driver: ${driver}
 🕒 Shift: ${shift}
+🚘 Vehicle: ${vehicle}
 
-🚘 Vehicle No: ${vehicle}
-
-📍 Starting KM: ${start}
-
-📍 Ending KM: ${end}
-
-🛣️ Total KM: ${totalKm}
+📍 Start KM: ${start}
+📍 End KM: ${end}
+🛣 Total KM: ${totalKm}
 
 ⛽ CNG Cost: ₹${cng}
 
 📌 Magarpatta Trips: ${mag}
-
+📌 Kharadi Trips: ${kha}
 🚖 Total Trips: ${totalTrips}
 
 📝 Remarks: ${remarks}`;
 
-    document.getElementById("report").style.display = "block";
-    document.getElementById("report").innerText = report;
+    let reportBox = document.getElementById("report");
+    reportBox.style.display = "block";
+    reportBox.innerText = report;
 }
 
-// Send WhatsApp
+// WhatsApp Send
 function sendWhatsApp(){
 
     let report = document.getElementById("report").innerText;
 
-    if(report === ""){
+    if(report.trim() === ""){
         alert("Please Generate Report First");
         return;
     }
 
     let phone = "918530985372";
 
-    let url = "https://wa.me/" + phone +
-              "?text=" + encodeURIComponent(report);
+    let url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(report);
 
     window.open(url, "_blank");
 }
@@ -215,4 +211,3 @@ function sendWhatsApp(){
 
 </body>
 </html>
-```
