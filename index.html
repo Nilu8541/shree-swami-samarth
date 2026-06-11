@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shree Swami Samarth Shop</title>
+
+<style>
+body{
+  font-family: Arial;
+  background:#f5f5f5;
+  margin:0;
+}
+
+.container{
+  max-width:500px;
+  margin:20px auto;
+  background:white;
+  padding:15px;
+  border-radius:12px;
+}
+
+h1{
+  text-align:center;
+  color:#ff6600;
+}
+
+input{
+  width:100%;
+  padding:10px;
+  margin:5px 0;
+  border-radius:6px;
+  border:1px solid #ccc;
+}
+
+.product{
+  display:flex;
+  justify-content:space-between;
+  padding:10px;
+  margin:8px 0;
+  background:#fafafa;
+  border-radius:8px;
+}
+
+.qty{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:8px;
+  margin-top:10px;
+  cursor:pointer;
+  font-size:16px;
+}
+
+.add{background:#007bff;color:white;}
+.pay{background:#28a745;color:white;}
+.wa{background:#25D366;color:white;}
+.loc{background:#ff6600;color:white;}
+.pdf{background:#6f42c1;color:white;}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Shree Swami Samarth Shop</h1>
+
+<!-- CUSTOMER DETAILS -->
+<input id="name" placeholder="नाव">
+<input id="phone" placeholder="मोबाईल नंबर">
+<input id="address" placeholder="पत्ता">
+
+<!-- PRODUCTS -->
+<div class="product">
+  <span>साखर - ₹100</span>
+  <div class="qty">
+    <button onclick="change('sugar',-1)">-</button>
+    <span id="sugar">0</span>
+    <button onclick="change('sugar',1)">+</button>
+  </div>
+</div>
+
+<div class="product">
+  <span>पावडर - ₹150</span>
+  <div class="qty">
+    <button onclick="change('powder',-1)">-</button>
+    <span id="powder">0</span>
+    <button onclick="change('powder',1)">+</button>
+  </div>
+</div>
+
+<div class="product">
+  <span>तेल - ₹200</span>
+  <div class="qty">
+    <button onclick="change('oil',-1)">-</button>
+    <span id="oil">0</span>
+    <button onclick="change('oil',1)">+</button>
+  </div>
+</div>
+
+<h3 id="total">Total: ₹0</h3>
+
+<!-- BUTTONS -->
+<button class="pay" onclick="payNow()">UPI Payment</button>
+
+<button class="wa" onclick="orderWhatsApp()">WhatsApp Order</button>
+
+<button class="pdf" onclick="downloadPDF()">Download Invoice</button>
+
+<a href="https://www.google.com/maps/search/?api=1&query=Nilesh%20Mandale%20House%20Ganesh%20Nagar" target="_blank">
+<button class="loc">📍 Location पाहा</button>
+</a>
+
+</div>
+
+<script>
+
+let cart = {sugar:0,powder:0,oil:0};
+
+let price = {
+  sugar:100,
+  powder:150,
+  oil:200
+};
+
+function change(item,val){
+  cart[item]+=val;
+  if(cart[item]<0) cart[item]=0;
+
+  document.getElementById(item).innerText = cart[item];
+
+  updateTotal();
+}
+
+function updateTotal(){
+  let total =
+  cart.sugar*price.sugar +
+  cart.powder*price.powder +
+  cart.oil*price.oil;
+
+  document.getElementById("total").innerText = "Total: ₹" + total;
+}
+
+function payNow(){
+  window.location.href = "upi://pay?pa=nileshmandale@axisbank&pn=Shop&cu=INR";
+}
+
+function orderWhatsApp(){
+
+  let name = document.getElementById("name").value;
+  let phone = document.getElementById("phone").value;
+  let address = document.getElementById("address").value;
+
+  let msg = "Order Details:%0A";
+  msg += "Name: " + name + "%0A";
+  msg += "Phone: " + phone + "%0A";
+  msg += "Address: " + address + "%0A%0A";
+
+  if(cart.sugar>0) msg += "साखर: " + cart.sugar + "%0A";
+  if(cart.powder>0) msg += "पावडर: " + cart.powder + "%0A";
+  if(cart.oil>0) msg += "तेल: " + cart.oil + "%0A";
+
+  window.open("https://wa.me/918530985372?text=" + msg, "_blank");
+}
+
+function downloadPDF(){
+
+  let name = document.getElementById("name").value;
+  let address = document.getElementById("address").value;
+
+  let total =
+  cart.sugar*price.sugar +
+  cart.powder*price.powder +
+  cart.oil*price.oil;
+
+  let content =
+  "Shree Swami Samarth Invoice\n\n" +
+  "Name: " + name + "\n" +
+  "Address: " + address + "\n\n" +
+  "Sugar: " + cart.sugar + "\n" +
+  "Powder: " + cart.powder + "\n" +
+  "Oil: " + cart.oil + "\n\n" +
+  "TOTAL: ₹" + total;
+
+  let blob = new Blob([content], {type:"application/pdf"});
+  let a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "invoice.pdf";
+  a.click();
+}
+
+</script>
+
+</body>
+</html>
