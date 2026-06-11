@@ -1,80 +1,63 @@
 <!DOCTYPE html>
-<html lang="mr">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Shree Swami Samarth Shop</title>
+<title> Daily Report Portal</title>
 
 <style>
-
 body{
-  font-family: Arial;
-  background:#f5f5f5;
-  margin:0;
+    font-family:Arial,sans-serif;
+    background:#f4f6f9;
+    padding:15px;
 }
-
 .container{
-  max-width:500px;
-  margin:20px auto;
-  background:white;
-  padding:15px;
-  border-radius:12px;
+    max-width:700px;
+    margin:auto;
+    background:#fff;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 0 10px rgba(0,0,0,0.15);
 }
-
-h1{
-  text-align:center;
-  color:#ff6600;
+h2{
+    text-align:center;
 }
-
-input{
-  width:100%;
-  padding:10px;
-  margin:5px 0;
-  border-radius:6px;
-  border:1px solid #ccc;
+label{
+    font-weight:bold;
+    margin-top:10px;
+    display:block;
 }
-
-.product{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px;
-  margin:8px 0;
-  background:#fafafa;
-  border-radius:8px;
+input,select,textarea{
+    width:100%;
+    padding:10px;
+    margin-top:5px;
+    border:1px solid #ccc;
+    border-radius:6px;
 }
-
-.qty{
-  display:flex;
-  gap:10px;
-  align-items:center;
-}
-
-.qty button{
-  width:35px;
-  height:35px;
-}
-
 button{
-  padding:10px;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border:none;
+    border-radius:6px;
+    font-size:16px;
+    cursor:pointer;
 }
-
-.main-btn{
-  width:100%;
-  margin-top:10px;
-  color:white;
-  font-size:16px;
+.generate{
+    background:#007bff;
+    color:#fff;
 }
-
-.pay{background:#28a745;}
-.wa{background:#25D366;}
-.pdf{background:#6f42c1;}
-.loc{background:#ff6600;}
-
+.whatsapp{
+    background:#25D366;
+    color:#fff;
+}
+.report{
+    margin-top:15px;
+    background:#eef5ff;
+    padding:15px;
+    border-radius:8px;
+    white-space:pre-line;
+}
 </style>
 </head>
 
@@ -82,223 +65,145 @@ button{
 
 <div class="container">
 
-<h1>Shree Swami Samarth Shop</h1>
+<h2>🚗 Driver Daily Report</h2>
 
-<input id="name" placeholder="नाव">
-<input id="phone" placeholder="मोबाईल नंबर">
-<input id="address" placeholder="पत्ता">
+<label>Date</label>
+<input type="date" id="date">
 
-<!-- PRODUCTS -->
+<label>Driver Name</label>
+<input type="text" id="driver">
 
-<div id="products"></div>
+<label>Shift</label>
+<select id="shift">
+<option>A Shift</option>
+<option>B Shift</option>
+<option>C Shift</option>
+<option>Night Shift</option>
+</select>
 
-<h2 id="total">Total: ₹0</h2>
+<label>Vehicle Number</label>
+<input type="text" id="vehicle">
 
-<button class="main-btn pay" onclick="payNow()">UPI Payment</button>
+<label>Pickup Time</label>
+<input type="time" id="pickup">
 
-<button class="main-btn wa" onclick="orderWhatsApp()">WhatsApp Order</button>
+<label>Drop Time</label>
+<input type="time" id="drop">
 
-<button class="main-btn pdf" onclick="downloadInvoice()">Download Invoice</button>
+<label>Starting KM</label>
+<input type="number" id="startkm">
 
-<a href="https://www.google.com/maps/search/?api=1&query=Ganesh+Nagar" target="_blank">
-  <button class="main-btn loc">📍 Location पाहा</button>
-</a>
+<label>Ending KM</label>
+<input type="number" id="endkm">
+
+<label>CNG Cost (₹)</label>
+<input type="number" id="cng">
+
+<label>Magarpatta Trips</label>
+<input type="number" id="magarpatta" value="0">
+
+<label>Kharadi Trips</label>
+<input type="number" id="kharadi" value="0">
+
+<label>Male Employees</label>
+<input type="number" id="male" value="0">
+
+<label>Female Employees</label>
+<input type="number" id="female" value="0">
+
+<label>Remarks</label>
+<textarea id="remarks"></textarea>
+
+<button class="generate" onclick="generateReport()">
+Generate Report
+</button>
+
+<button class="whatsapp" onclick="sendWhatsApp()">
+📲 Send to WhatsApp
+</button>
+
+<div id="report" class="report" style="display:none;"></div>
 
 </div>
 
 <script>
 
-let products = [
+document.getElementById("date").value =
+new Date().toISOString().split("T")[0];
 
-  {id:"sugar",name:"साखर",price:100},
-  {id:"rice",name:"तांदूळ",price:80},
-  {id:"wheat",name:"गहू",price:60},
-  {id:"toor",name:"तूर डाळ",price:140},
-  {id:"harbhara",name:"हरभरा डाळ",price:110},
-  {id:"moog",name:"मूग डाळ",price:130},
-  {id:"oil",name:"तेल",price:200},
-  {id:"salt",name:"मीठ",price:40},
-  {id:"halad",name:"हळद पावडर",price:30},
-  {id:"tikhat",name:"तिखट पावडर",price:50},
-  {id:"dhane",name:"धणे पावडर",price:40},
-  {id:"masala",name:"गरम मसाला",price:60},
-  {id:"tea",name:"चहा पावडर",price:250},
-  {id:"coffee",name:"कॉफी",price:300},
-  {id:"soap",name:"साबण",price:35},
-  {id:"powder",name:"डिटर्जंट पावडर",price:120},
-  {id:"shampoo",name:"शॅम्पू",price:5},
-  {id:"hairoil",name:"हेअर ऑइल",price:90},
-  {id:"paste",name:"टूथपेस्ट",price:55},
-  {id:"brush",name:"ब्रश",price:20},
-  {id:"agarbatti",name:"अगरबत्ती",price:30},
-  {id:"matchbox",name:"माचीस",price:5},
-  {id:"biscuit",name:"बिस्किट",price:20},
-  {id:"chocolate",name:"चॉकलेट",price:10},
-  {id:"noodles",name:"नूडल्स",price:15},
-  {id:"wafers",name:"वेफर्स",price:20},
-  {id:"drink",name:"कोल्ड ड्रिंक",price:40}
+function generateReport(){
 
-];
+let date=document.getElementById("date").value;
+let driver=document.getElementById("driver").value;
+let shift=document.getElementById("shift").value;
+let vehicle=document.getElementById("vehicle").value;
+let pickup=document.getElementById("pickup").value;
+let drop=document.getElementById("drop").value;
+let start=parseFloat(document.getElementById("startkm").value)||0;
+let end=parseFloat(document.getElementById("endkm").value)||0;
+let cng=parseFloat(document.getElementById("cng").value)||0;
 
-let cart = {};
+let mag=parseInt(document.getElementById("magarpatta").value)||0;
+let kha=parseInt(document.getElementById("kharadi").value)||0;
 
-products.forEach(item=>{
-  cart[item.id]=0;
-});
+let male=parseInt(document.getElementById("male").value)||0;
+let female=parseInt(document.getElementById("female").value)||0;
 
-let productsDiv = document.getElementById("products");
+let remarks=document.getElementById("remarks").value;
 
-products.forEach(item=>{
+let totalKm=end-start;
+let totalTrips=mag+kha;
+let totalEmp=male+female;
 
-  productsDiv.innerHTML += `
+let report=
+`🚗 DRIVER DAILY REPORT
 
-  <div class="product">
+Date: ${date}
+Driver Name: ${driver}
+Shift: ${shift}
 
-    <span>${item.name} - ₹${item.price}</span>
+Vehicle No: ${vehicle}
 
-    <div class="qty">
+Pickup Time: ${pickup}
+Drop Time: ${drop}
 
-      <button onclick="changeQty('${item.id}',-1)">-</button>
+Starting KM: ${start}
+Ending KM: ${end}
+Total KM: ${totalKm}
 
-      <span id="${item.id}">0</span>
+CNG Cost: ₹${cng}
 
-      <button onclick="changeQty('${item.id}',1)">+</button>
+Magarpatta Trips: ${mag}
+Kharadi Trips: ${kha}
+Total Trips: ${totalTrips}
 
-    </div>
+Male Employees: ${male}
+Female Employees: ${female}
+Total Employees: ${totalEmp}
 
-  </div>
+Remarks: ${remarks}`;
 
-  `;
-
-});
-
-function changeQty(id,val){
-
-  cart[id]+=val;
-
-  if(cart[id]<0){
-    cart[id]=0;
-  }
-
-  document.getElementById(id).innerText = cart[id];
-
-  updateTotal();
+document.getElementById("report").style.display="block";
+document.getElementById("report").innerText=report;
 }
 
-function updateTotal(){
+function sendWhatsApp(){
 
-  let total = 0;
+let report=document.getElementById("report").innerText;
 
-  products.forEach(item=>{
-
-    total += cart[item.id] * item.price;
-
-  });
-
-  document.getElementById("total").innerText =
-  "Total: ₹" + total;
+if(report==""){
+alert("Please Generate Report First");
+return;
 }
 
-function payNow(){
+let phone="918530985372";
 
-  let total = 0;
+let url=
+"https://wa.me/"+phone+
+"?text="+encodeURIComponent(report);
 
-  products.forEach(item=>{
-
-    total += cart[item.id] * item.price;
-
-  });
-
-  window.location.href =
-  "upi://pay?pa=nileshmandale@axisbank&pn=Shop&am="+total+"&cu=INR";
+window.open(url,"_blank");
 }
-
-function orderWhatsApp(){
-
-  let name =
-  document.getElementById("name").value;
-
-  let phone =
-  document.getElementById("phone").value;
-
-  let address =
-  document.getElementById("address").value;
-
-  let msg = "🛒 Order Details:%0A%0A";
-
-  msg += "👤 Name: " + name + "%0A";
-  msg += "📞 Phone: " + phone + "%0A";
-  msg += "🏠 Address: " + address + "%0A%0A";
-
-  products.forEach(item=>{
-
-    if(cart[item.id] > 0){
-
-      msg += item.name + " : " + cart[item.id] + "%0A";
-
-    }
-
-  });
-
-  let total = 0;
-
-  products.forEach(item=>{
-
-    total += cart[item.id] * item.price;
-
-  });
-
-  msg += "%0A💰 Total: ₹" + total;
-
-  window.open(
-    "https://wa.me/918530985372?text=" + msg,
-    "_blank"
-  );
-}
-
-function downloadInvoice(){
-
-  let name =
-  document.getElementById("name").value;
-
-  let address =
-  document.getElementById("address").value;
-
-  let content =
-  "Shree Swami Samarth Shop Invoice\n\n";
-
-  content += "Name: " + name + "\n";
-  content += "Address: " + address + "\n\n";
-
-  let total = 0;
-
-  products.forEach(item=>{
-
-    if(cart[item.id] > 0){
-
-      content +=
-      item.name + " : " +
-      cart[item.id] +
-      " x ₹" + item.price + "\n";
-
-      total += cart[item.id] * item.price;
-    }
-
-  });
-
-  content += "\nTOTAL: ₹" + total;
-
-  let blob = new Blob([content], {type:"text/plain"});
-
-  let a = document.createElement("a");
-
-  a.href = URL.createObjectURL(blob);
-
-  a.download = "invoice.txt";
-
-  a.click();
-}
-
 </script>
 
 </body>
