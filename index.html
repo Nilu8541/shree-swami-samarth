@@ -70,25 +70,27 @@ button{
 <label>Date</label>
 <input type="date" id="date">
 
-<label>Driver Name</label>
-<input type="text" id="driver">
+<<label>Driver Name </label>
+<select id="Number">
+    <option value="">-- Select Name --</option>
+    <option value="Anil " selected>Anil</option>
+    <option value="Pratik" selected>Pratik</option>
+    <option value="Yash">Yash</option>
+</select>
 
 <label>Shift</label>
 <select id="shift">
-<option>A Shift</option>
-<option>B Shift</option>
-<option>C Shift</option>
+<option>Day Shift</option>
 <option>Night Shift</option>
 </select>
 
 <label>Vehicle Number</label>
-<input type="text" id="vehicle">
-
-<label>Pickup Time</label>
-<input type="time" id="pickup">
-
-<label>Drop Time</label>
-<input type="time" id="drop">
+<select id="vehicle">
+    <option value="">-- Select Vehicle --</option>
+    <option value="MH12ZE1879" selected>MH 12 ZE 1879</option>
+    <option value="MH12ZE1879" selected>MH 12 CE 1234</option>
+    <option value="MH12CW8541">MH 12 CW 8541</option>
+</select>
 
 <label>Starting KM</label>
 <input type="number" id="startkm">
@@ -105,11 +107,6 @@ button{
 <label>Kharadi Trips</label>
 <input type="number" id="kharadi" value="0">
 
-<label>Male Employees</label>
-<input type="number" id="male" value="0">
-
-<label>Female Employees</label>
-<input type="number" id="female" value="0">
 
 <label>Remarks</label>
 <textarea id="remarks"></textarea>
