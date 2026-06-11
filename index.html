@@ -1,204 +1,218 @@
+```html
 <!DOCTYPE html>
-<html lang="mr">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shree Swami Samarth Shop</title>
+<title>Driver Daily Report</title>
 
 <style>
 body{
-  font-family: Arial;
-  background:#f5f5f5;
-  margin:0;
+    font-family: Arial, sans-serif;
+    background:#f4f6f9;
+    padding:15px;
 }
-
 .container{
-  max-width:500px;
-  margin:20px auto;
-  background:white;
-  padding:15px;
-  border-radius:12px;
+    max-width:700px;
+    margin:auto;
+    background:#fff;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 0 10px rgba(0,0,0,0.15);
 }
-
-h1{
-  text-align:center;
-  color:#ff6600;
+h2{
+    text-align:center;
 }
-
-input{
-  width:100%;
-  padding:10px;
-  margin:5px 0;
-  border-radius:6px;
-  border:1px solid #ccc;
+label{
+    font-weight:bold;
+    margin-top:10px;
+    display:block;
 }
-
-.product{
-  display:flex;
-  justify-content:space-between;
-  padding:10px;
-  margin:8px 0;
-  background:#fafafa;
-  border-radius:8px;
+input,select,textarea{
+    width:100%;
+    padding:10px;
+    margin-top:5px;
+    border:1px solid #ccc;
+    border-radius:6px;
+    box-sizing:border-box;
 }
-
-.qty{
-  display:flex;
-  gap:10px;
-  align-items:center;
-}
-
 button{
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:8px;
-  margin-top:10px;
-  cursor:pointer;
-  font-size:16px;
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border:none;
+    border-radius:6px;
+    font-size:16px;
+    cursor:pointer;
 }
-
-.add{background:#007bff;color:white;}
-.pay{background:#28a745;color:white;}
-.wa{background:#25D366;color:white;}
-.loc{background:#ff6600;color:white;}
-.pdf{background:#6f42c1;color:white;}
-
+.generate{
+    background:#007bff;
+    color:#fff;
+}
+.whatsapp{
+    background:#25D366;
+    color:#fff;
+}
+.report{
+    margin-top:15px;
+    background:#eef5ff;
+    padding:15px;
+    border-radius:8px;
+    white-space:pre-line;
+    display:none;
+}
 </style>
-
 </head>
 
 <body>
 
 <div class="container">
 
-<h1>Shree Swami Samarth Shop</h1>
+<h2>🚗 Driver Daily Report</h2>
 
-<!-- CUSTOMER DETAILS -->
-<input id="name" placeholder="नाव">
-<input id="phone" placeholder="मोबाईल नंबर">
-<input id="address" placeholder="पत्ता">
+<label>Date</label>
+<input type="date" id="date">
 
-<!-- PRODUCTS -->
-<div class="product">
-  <span>साखर - ₹100</span>
-  <div class="qty">
-    <button onclick="change('sugar',-1)">-</button>
-    <span id="sugar">0</span>
-    <button onclick="change('sugar',1)">+</button>
-  </div>
-</div>
+<label>Driver Name</label>
+<select id="driver">
+    <option value="">-- Select Driver --</option>
+    <option>Anil</option>
+    <option>Pratik</option>
+    <option>Yash</option>
+</select>
 
-<div class="product">
-  <span>पावडर - ₹150</span>
-  <div class="qty">
-    <button onclick="change('powder',-1)">-</button>
-    <span id="powder">0</span>
-    <button onclick="change('powder',1)">+</button>
-  </div>
-</div>
+<label>Shift</label>
+<select id="shift">
+    <option>Day Shift</option>
+    <option>Night Shift</option>
+</select>
 
-<div class="product">
-  <span>तेल - ₹200</span>
-  <div class="qty">
-    <button onclick="change('oil',-1)">-</button>
-    <span id="oil">0</span>
-    <button onclick="change('oil',1)">+</button>
-  </div>
-</div>
+<label>Vehicle Number</label>
+<select id="vehicle">
+    <option>MH 12 ZE 1879</option>
+    <option>MH 12 CE 1234</option>
+    <option>MH 12 CW 8541</option>
+</select>
 
-<h3 id="total">Total: ₹0</h3>
+<label>Starting KM</label>
+<input type="number" id="startkm">
 
-<!-- BUTTONS -->
-<button class="pay" onclick="payNow()">UPI Payment</button>
+<label>Ending KM</label>
+<input type="number" id="endkm">
 
-<button class="wa" onclick="orderWhatsApp()">WhatsApp Order</button>
+<label>Total KM</label>
+<input type="number" id="totalkm" readonly>
 
-<button class="pdf" onclick="downloadPDF()">Download Invoice</button>
+<label>CNG Cost (₹)</label>
+<input type="number" id="cng">
 
-<a href="https://www.google.com/maps/search/?api=1&query=Nilesh%20Mandale%20House%20Ganesh%20Nagar" target="_blank">
-<button class="loc">📍 Location पाहा</button>
-</a>
+<label>Magarpatta Trips</label>
+<input type="number" id="magarpatta" value="0">
+
+<label>Kharadi Trips</label>
+<input type="number" id="kharadi" value="0">
+
+<label>Remarks</label>
+<textarea id="remarks"></textarea>
+
+<button class="generate" onclick="generateReport()">
+Generate Report
+</button>
+
+<button class="whatsapp" onclick="sendWhatsApp()">
+📲 Send to WhatsApp
+</button>
+
+<div id="report" class="report"></div>
 
 </div>
 
 <script>
 
-let cart = {sugar:0,powder:0,oil:0};
+// Auto Date
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("date").value =
+    new Date().toISOString().split("T")[0];
+});
 
-let price = {
-  sugar:100,
-  powder:150,
-  oil:200
-};
+// Auto KM Calculation
+document.getElementById("startkm").addEventListener("input", calculateKM);
+document.getElementById("endkm").addEventListener("input", calculateKM);
 
-function change(item,val){
-  cart[item]+=val;
-  if(cart[item]<0) cart[item]=0;
+function calculateKM() {
+    let start = Number(document.getElementById("startkm").value) || 0;
+    let end = Number(document.getElementById("endkm").value) || 0;
 
-  document.getElementById(item).innerText = cart[item];
-
-  updateTotal();
+    document.getElementById("totalkm").value = end - start;
 }
 
-function updateTotal(){
-  let total =
-  cart.sugar*price.sugar +
-  cart.powder*price.powder +
-  cart.oil*price.oil;
+// Generate Report
+function generateReport() {
 
-  document.getElementById("total").innerText = "Total: ₹" + total;
+    let date = document.getElementById("date").value;
+    let driver = document.getElementById("driver").value;
+    let shift = document.getElementById("shift").value;
+    let vehicle = document.getElementById("vehicle").value;
+
+    let start = Number(document.getElementById("startkm").value) || 0;
+    let end = Number(document.getElementById("endkm").value) || 0;
+    let totalKm = end - start;
+
+    let cng = Number(document.getElementById("cng").value) || 0;
+    let mag = Number(document.getElementById("magarpatta").value) || 0;
+    let kha = Number(document.getElementById("kharadi").value) || 0;
+
+    let totalTrips = mag + kha;
+
+    let remarks = document.getElementById("remarks").value;
+
+    let report = `🚗 DRIVER DAILY REPORT
+
+📅 Date: ${date}
+👤 Driver: ${driver}
+🕒 Shift: ${shift}
+🚘 Vehicle: ${vehicle}
+
+📍 Start KM: ${start}
+📍 End KM: ${end}
+🛣 Total KM: ${totalKm}
+
+⛽ CNG Cost: ₹${cng}
+
+📌 Magarpatta Trips: ${mag}
+📌 Kharadi Trips: ${kha}
+🚖 Total Trips: ${totalTrips}
+
+📝 Remarks: ${remarks}`;
+
+    let reportBox = document.getElementById("report");
+    reportBox.style.display = "block";
+    reportBox.textContent = report;
 }
 
-function payNow(){
-  window.location.href = "upi://pay?pa=nileshmandale@axisbank&pn=Shop&cu=INR";
+// WhatsApp Send
+function sendWhatsApp() {
+
+    let report =
+    document.getElementById("report").textContent;
+
+    if (!report.trim()) {
+        alert("Please Generate Report First");
+        return;
+    }
+
+    let phone = "918530985372";
+
+    let url =
+    "https://wa.me/" +
+    phone +
+    "?text=" +
+    encodeURIComponent(report);
+
+    window.open(url, "_blank");
 }
-
-function orderWhatsApp(){
-
-  let name = document.getElementById("name").value;
-  let phone = document.getElementById("phone").value;
-  let address = document.getElementById("address").value;
-
-  let msg = "Order Details:%0A";
-  msg += "Name: " + name + "%0A";
-  msg += "Phone: " + phone + "%0A";
-  msg += "Address: " + address + "%0A%0A";
-
-  if(cart.sugar>0) msg += "साखर: " + cart.sugar + "%0A";
-  if(cart.powder>0) msg += "पावडर: " + cart.powder + "%0A";
-  if(cart.oil>0) msg += "तेल: " + cart.oil + "%0A";
-
-  window.open("https://wa.me/918530985372?text=" + msg, "_blank");
-}
-
-function downloadPDF(){
-
-  let name = document.getElementById("name").value;
-  let address = document.getElementById("address").value;
-
-  let total =
-  cart.sugar*price.sugar +
-  cart.powder*price.powder +
-  cart.oil*price.oil;
-
-  let content =
-  "Shree Swami Samarth Invoice\n\n" +
-  "Name: " + name + "\n" +
-  "Address: " + address + "\n\n" +
-  "Sugar: " + cart.sugar + "\n" +
-  "Powder: " + cart.powder + "\n" +
-  "Oil: " + cart.oil + "\n\n" +
-  "TOTAL: ₹" + total;
-
-  let blob = new Blob([content], {type:"application/pdf"});
-  let a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "invoice.pdf";
-  a.click();
-}
-
 </script>
 
 </body>
 </html>
+```
